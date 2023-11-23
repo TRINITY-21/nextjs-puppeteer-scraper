@@ -1,12 +1,15 @@
+"use client"
+import React from 'react';
 import Image from 'next/image'
 import styles from './page.module.css'
+import Spotify from '@/components/Spotify';
 
 export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.description}>
         <p>
-          Get started by editing&nbsp;
+          Get started by editings&nbsp;
           <code className={styles.code}>src/app/page.tsx</code>
         </p>
         <div>
@@ -38,6 +41,8 @@ export default function Home() {
           priority
         />
       </div>
+
+      <Spotify />
 
       <div className={styles.grid}>
         <a
