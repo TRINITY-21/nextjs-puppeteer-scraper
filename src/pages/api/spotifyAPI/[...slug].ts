@@ -2,6 +2,8 @@
 // eslint-disable-next-line import/no-anonymous-default-export
 import type { NextApiRequest, NextApiResponse } from 'next'
 import puppeteer from "puppeteer";
+import chromium from "chrome-aws-lambda";
+import playwright from "playwright-core";
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -11,13 +13,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
     const artistId  = slug
     
-    const browser = await puppeteer.launch( 
-      {
-          headless: "new",
-          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    const browser = await playwright.chromium.launch({
+        args: [...chromium.args, "--font-render-hinting=none"], // This way fix rendering issues with specific fonts
+        executablePath:
+          process.env.NODE_ENV === "production"
+            ? await chromium.executablePath
+            : "/opt/homebrew/bin/chromium",
+        headless: 
+          process.env.NODE_ENV === "production" ? chromium.headless : true,
       });
-    
-    const page = await browser.newPage();
+  
+      const context = await browser.newContext();
+  
+      const page = await context.newPage();
 
     await page.goto('https://open.spotify.com/artist/'+artistId);
     await page.waitForSelector('.wi2HeHXOI471ZOh8ncCG');
@@ -45,3 +53,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
+
+
+ 
